@@ -149,7 +149,7 @@ jobs:
             youtube.apk
 
       - name: Download Apktool
-        run: wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar -O apktool.jar
+        run: wget https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar -O apktool.jar
 
       - name: Decompile patched APK
         run: java -jar apktool.jar d RDX-YT-unsigned.apk -o decompiled_apk -f
