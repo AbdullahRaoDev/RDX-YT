@@ -108,19 +108,43 @@ jobs:
             --options acknowledge_dangers=true \
             /output
 
-          mapfile -t APKS < <(find stock-apk -maxdepth 1 -type f -name '*.apk')
-          if [[ "${#APKS[@]}" -ne 1 ]]; then
-            echo "Expected exactly one APK from apkeep, found ${#APKS[@]}" >&2
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          mapfile -t APKS < <(find stock-apk -maxdepth 1 -type f -iname '*.apk' | sort)
+          mapfile -t BUNDLES < <(
+            find stock-apk -maxdepth 1 -type f \
+              \( -iname '*.xapk' -o -iname '*.apkm' -o -iname '*.apks' \) | sort
+          )
+
+          if [[ "${#APKS[@]}" -eq 1 && "${#BUNDLES[@]}" -eq 0 ]]; then
+            SIGNATURE_SOURCE="${APKS[0]}"
+          elif [[ "${#APKS[@]}" -eq 0 && "${#BUNDLES[@]}" -eq 1 ]]; then
+            mkdir -p stock-apk/extracted
+            unzip -q "${BUNDLES[0]}" -d stock-apk/extracted
+
+            SIGNATURE_SOURCE=""
+            while IFS= read -r candidate; do
+              CANDIDATE_BADGING="$("$AAPT" dump badging "$candidate" | sed -n '1p')"
+              if grep --quiet "name='com.google.android.youtube'" <<<"$CANDIDATE_BADGING" && \
+                 grep --quiet "versionName='${{ steps.youtube.outputs.version }}'" <<<"$CANDIDATE_BADGING" && \
+                 ! grep --quiet " split='" <<<"$CANDIDATE_BADGING"; then
+                SIGNATURE_SOURCE="$candidate"
+                break
+              fi
+            done < <(find stock-apk/extracted -type f -iname '*.apk' | sort)
+
+            if [[ -z "$SIGNATURE_SOURCE" ]]; then
+              echo "Could not identify the signed base APK inside ${BUNDLES[0]}" >&2
+              exit 1
+            fi
+          else
+            echo "Expected one APK or one split bundle; downloaded files were:" >&2
+            find stock-apk -maxdepth 1 -type f -printf '%f\n' >&2
             exit 1
           fi
-          mv "${APKS[0]}" youtube.apk
-
-          BADGING="$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging youtube.apk | head -n 1)"
-          grep --quiet "name='com.google.android.youtube'" <<<"$BADGING"
-          grep --quiet "versionName='${{ steps.youtube.outputs.version }}'" <<<"$BADGING"
 
           SIGNER_SHA256="$(
-            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs youtube.apk |
+            "$APKSIGNER" verify --print-certs "$SIGNATURE_SOURCE" |
               awk -F': ' '/Signer #1 certificate SHA-256 digest/ { print tolower($2); exit }'
           )"
           case "$SIGNER_SHA256" in
@@ -133,6 +157,28 @@ jobs:
               exit 1
               ;;
           esac
+
+          if [[ "${#APKS[@]}" -eq 1 ]]; then
+            cp "$SIGNATURE_SOURCE" youtube.apk
+          else
+            APKEDITOR_URL="$(
+              curl --fail --silent --show-error --location \
+                https://api.github.com/repos/REAndroid/APKEditor/releases/latest |
+                jq --raw-output \
+                  '[.assets[] | select(.name | startswith("APKEditor-") and endswith(".jar"))][0].browser_download_url'
+            )"
+            test -n "$APKEDITOR_URL" && test "$APKEDITOR_URL" != "null"
+            curl --fail --location --retry 3 --retry-all-errors \
+              --output apkeditor.jar "$APKEDITOR_URL"
+            java -jar apkeditor.jar m \
+              -i "${BUNDLES[0]}" \
+              -o youtube.apk \
+              -clean-meta
+          fi
+
+          BADGING="$("$AAPT" dump badging youtube.apk | sed -n '1p')"
+          grep --quiet "name='com.google.android.youtube'" <<<"$BADGING"
+          grep --quiet "versionName='${{ steps.youtube.outputs.version }}'" <<<"$BADGING"
 
       - name: Patch and brand RDX-YT
         shell: bash
