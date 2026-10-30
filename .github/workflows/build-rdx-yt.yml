@@ -148,6 +148,24 @@ jobs:
             --out RDX-YT-unsigned.apk \
             youtube.apk
 
+      - name: Download Apktool
+        run: wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar -O apktool.jar
+
+      - name: Decompile patched APK
+        run: java -jar apktool.jar d RDX-YT-unsigned.apk -o decompiled_apk -f
+
+      - name: Inject credits
+        run: chmod +x apply_credits.sh && ./apply_credits.sh
+
+      - name: Recompile credited APK
+        run: java -jar apktool.jar b decompiled_apk -o RDX-YT-credited-unsigned.apk
+
+      - name: Install zipalign
+        run: sudo apt-get install zipalign
+
+      - name: Zipalign credited APK
+        run: zipalign -p 4 RDX-YT-credited-unsigned.apk RDX-YT-aligned.apk
+
       - name: Sign RDX-YT APK
         shell: bash
         run: |
@@ -169,21 +187,13 @@ jobs:
 
           BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
 
-          # Re-aligning invalidates the CLI's disposable signature, producing the
-          # unsigned APK that is signed with this run's temporary local key.
-          zip --delete RDX-YT-unsigned.apk \
-            'META-INF/*.RSA' 'META-INF/*.DSA' 'META-INF/*.EC' \
-            'META-INF/*.SF' 'META-INF/*.MF' || true
-          "$BUILD_TOOLS/zipalign" -p -f 4 \
-            RDX-YT-unsigned.apk RDX-YT-aligned-unsigned.apk
-
           "$BUILD_TOOLS/apksigner" sign \
             --ks rdx-yt-temporary.jks \
             --ks-key-alias rdx-yt \
             --ks-pass "pass:$STORE_PASSWORD" \
             --key-pass "pass:$KEY_PASSWORD" \
             --out RDX-YT.apk \
-            RDX-YT-aligned-unsigned.apk
+            RDX-YT-aligned.apk
 
           "$BUILD_TOOLS/apksigner" verify --verbose RDX-YT.apk
 
