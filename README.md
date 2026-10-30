@@ -5,8 +5,20 @@
 
 ### Ad-Free Custom YouTube Client • Developed by Abdullah Naeem Rao
 
-[![Download RDX GmsCore](https://img.shields.io/badge/1._Install-RDX_GmsCore-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/AbdullahRaoDev/RDX-YT/releases/latest/download/RDX-GmsCore.apk)
-[![Download RDX-YT](https://img.shields.io/badge/2._Install-RDX--YT-ff0033?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/AbdullahRaoDev/RDX-YT/releases/latest/download/RDX-YT.apk)
+## Download latest release
+
+<a href="https://github.com/AbdullahRaoDev/RDX-YT/releases/latest/download/RDX-GmsCore.apk">
+  <img src="https://img.shields.io/badge/STEP_1-DOWNLOAD_RDX--GmsCore-22c55e?style=for-the-badge&amp;logo=android&amp;logoColor=white" alt="Step 1: Download RDX-GmsCore APK" />
+</a>
+<br /><br />
+<a href="https://github.com/AbdullahRaoDev/RDX-YT/releases/latest/download/RDX-YT.apk">
+  <img src="https://img.shields.io/badge/STEP_2-DOWNLOAD_RDX--YT-ff0033?style=for-the-badge&amp;logo=youtube&amp;logoColor=white" alt="Step 2: Download RDX-YT APK" />
+</a>
+
+<p><strong>Install GmsCore first, then install RDX-YT.</strong></p>
+<p>
+  <a href="https://github.com/AbdullahRaoDev/RDX-YT/releases/latest">View release details and checksums</a>
+</p>
 
 ![Android](https://img.shields.io/badge/Android-111111?style=flat-square&logo=android&logoColor=3DDC84)
 ![ReVanced](https://img.shields.io/badge/ReVanced-111111?style=flat-square)
