@@ -1,0 +1,15 @@
+RDX-YT v1.0.1 - NON-ROOT INSTALLATION
+=====================================
+
+RDX-YT requires the companion RDX-GmsCore package on non-root Android devices.
+
+Install in this exact order:
+
+1. Uninstall any previously installed RDX-YT build.
+2. Install RDX-GmsCore.apk.
+3. Install RDX-YT.apk.
+4. Open RDX-YT.
+
+RDX-GmsCore.apk is downloaded unchanged from the official ReVanced/GmsCore
+GitHub release by the automated build workflow. Android treats GmsCore and
+RDX-YT as two applications, so both installations require user confirmation.
