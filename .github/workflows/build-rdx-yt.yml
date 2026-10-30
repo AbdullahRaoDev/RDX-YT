@@ -105,6 +105,7 @@ jobs:
             ghcr.io/efforg/apkeep:stable \
             --app "com.google.android.youtube@${{ steps.youtube.outputs.version }}" \
             --download-source apk-pure \
+            --options acknowledge_dangers=true \
             /output
 
           mapfile -t APKS < <(find stock-apk -maxdepth 1 -type f -name '*.apk')
@@ -117,6 +118,21 @@ jobs:
           BADGING="$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging youtube.apk | head -n 1)"
           grep --quiet "name='com.google.android.youtube'" <<<"$BADGING"
           grep --quiet "versionName='${{ steps.youtube.outputs.version }}'" <<<"$BADGING"
+
+          SIGNER_SHA256="$(
+            "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs youtube.apk |
+              awk -F': ' '/Signer #1 certificate SHA-256 digest/ { print tolower($2); exit }'
+          )"
+          case "$SIGNER_SHA256" in
+            3d7a1223019aa39d9ea0e3436ab7c0896bfb4fb679f4de5fe7c23f326c8f994a | \
+            5aad2bee6db95d17e05a08d7d1e64c10a1511879154483916b6ae6c7fd9cb0c6 | \
+            7fd2cea30c3a6022eb29419ce8f6f92ce8a4bd35b0cc879ed3cca6cbf5e9992d)
+              ;;
+            *)
+              echo "Untrusted stock APK signer: $SIGNER_SHA256" >&2
+              exit 1
+              ;;
+          esac
 
       - name: Patch and brand RDX-YT
         shell: bash
