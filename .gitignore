@@ -1,0 +1,13 @@
+# Build inputs and outputs
+*.apk
+*.apkm
+*.xapk
+*.jar
+*.rvp
+*.jks
+*.keystore
+
+# Local build state
+stock-apk/
+*-temporary-files/
+supported-versions.txt

@@ -1,0 +1,24 @@
+[
+  {
+    "patchName": "Custom branding",
+    "options": [
+      {
+        "key": "appName",
+        "value": "RDX-YT"
+      },
+      {
+        "key": "iconPath",
+        "value": "brand-res"
+      }
+    ]
+  },
+  {
+    "patchName": "Change package name",
+    "options": [
+      {
+        "key": "packageName",
+        "value": "com.rdx.yt"
+      }
+    ]
+  }
+]
