@@ -63,13 +63,13 @@ if [[ "$(grep --count '^\.method .* onCreate(Landroid/os/Bundle;)V$' "$MAIN_ACTI
 fi
 
 sed --in-place \
-  '/^\.method .* onCreate(Landroid\/os\/Bundle;)V$/a\    invoke-static {p0}, Lcom/rdx/yt/BrandCredits;->show(Landroid/content/Context;)V' \
+  '/^\.method .* onCreate(Landroid\/os\/Bundle;)V$/a\    invoke-static/range {p0 .. p0}, Lcom/rdx/yt/BrandCredits;->show(Landroid/content/Context;)V' \
   "$MAIN_ACTIVITY_FILE"
 
 mkdir -p "$(dirname "$CREDIT_SMALI_DESTINATION")"
 cp "$CREDIT_SMALI_SOURCE" "$CREDIT_SMALI_DESTINATION"
 
-grep --quiet 'BrandCredits;->show(Landroid/content/Context;)V' "$MAIN_ACTIVITY_FILE"
+grep --quiet 'invoke-static/range {p0 .. p0}, Lcom/rdx/yt/BrandCredits;->show(Landroid/content/Context;)V' "$MAIN_ACTIVITY_FILE"
 grep --quiet 'Developed by Abdullah Naeem Rao' "$CREDIT_SMALI_DESTINATION"
 
 echo "Injected persistent settings credit into ${#STRING_FILES[@]} localized string files."
