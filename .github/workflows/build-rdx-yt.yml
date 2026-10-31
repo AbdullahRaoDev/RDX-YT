@@ -251,6 +251,7 @@ jobs:
             --bypass-verification \
             --patches revanced-patches.rvp \
             --enable "GmsCore support" \
+            --disable "Announcements" \
             --enable "Custom branding" \
             --options "App name=$APP_NAME" \
             --options "Custom icon=$ICON_PATH" \
@@ -315,14 +316,16 @@ jobs:
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.1
-          name: RDX-YT v1.0.1 - Complete Non-Root Package
+          tag_name: v1.0.2
+          name: RDX-YT v1.0.2 - Abdullah Naeem Rao Edition
           body: |
             IMPORTANT: This non-root build requires both APKs.
 
             1. Uninstall any previous RDX-YT build (its temporary signing key cannot be reused).
             2. Install RDX-GmsCore.apk first.
             3. Install RDX-YT.apk, then open RDX-YT.
+
+            This release displays "RDX-YT • Developed by Abdullah Naeem Rao" at startup and includes a persistent developer credit at the top of RDX-YT Settings.
 
             GmsCore is the official companion from the ReVanced/GmsCore release and is required because a custom-signed YouTube package cannot authenticate through Google Play Services directly.
           files: |

@@ -1,4 +1,4 @@
-RDX-YT v1.0.1 - NON-ROOT INSTALLATION
+RDX-YT v1.0.2 - NON-ROOT INSTALLATION
 =====================================
 
 RDX-YT requires the companion RDX-GmsCore package on non-root Android devices.
